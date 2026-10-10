@@ -1,0 +1,9 @@
+// Finds PowerShell commands that turn off Windows Defender protections or add exclusions (T1562.001).
+// https://attack.mitre.org/techniques/T1562/001/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName in~ ("powershell.exe", "powershell_ise.exe")
+| where ProcessCommandLine has "Set-MpPreference"
+| where ProcessCommandLine has_any ("DisableRealtimeMonitoring", "DisableBehaviorMonitoring", "DisableIOAVProtection", "DisableScriptScanning", "ExclusionPath", "ExclusionProcess", "ExclusionExtension")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc

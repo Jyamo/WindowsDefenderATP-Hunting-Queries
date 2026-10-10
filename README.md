@@ -12,6 +12,9 @@ We are continually building up documentation about Advanced hunting and its data
 
 *Not using Microsoft Defender ATP?* If you haven't yet, experience how you can effectively scale your organization's incident response capabilities by signing up for a [free Microsoft Defender ATP trial](https://www.microsoft.com/en-us/windowsforbusiness/windows-atp?ocid=queryrepogit). 
 
+# Query categories
+Queries are grouped by folder: Campaigns, Command and Control, Credential Access, Defense Evasion, Delivery, Discovery, Execution, Exfiltration, Exploits, General queries, Impact, Lateral Movement, Persistence and Protection events. Notebooks contains an API demo notebook.
+
 # Suggestions and feedback
 We maintain a backlog of suggested sample queries in the project [issues page](https://github.com/Microsoft/WindowsDefenderATP-Hunting-Queries/issues). Feel free to comment, rate, or provide suggestions.
 

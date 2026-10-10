@@ -1,0 +1,9 @@
+// Finds PsExec and its lookalikes: the PSEXESVC service binary running, or psexec.exe invoked against a remote machine (T1569.002, T1021.002).
+// Sysadmins use PsExec legitimately, so compare against the accounts and machines you expect.
+// https://attack.mitre.org/techniques/T1569/002/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName =~ "psexesvc.exe"
+     or (FileName in~ ("psexec.exe", "psexec64.exe") and ProcessCommandLine has @"\\")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine
+| top 100 by EventTime desc

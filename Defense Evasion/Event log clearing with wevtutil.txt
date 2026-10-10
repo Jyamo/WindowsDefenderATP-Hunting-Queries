@@ -1,0 +1,8 @@
+// Finds attempts to clear Windows event logs, a common step to cover tracks (T1070.001).
+// https://attack.mitre.org/techniques/T1070/001/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where (FileName =~ "wevtutil.exe" and (ProcessCommandLine has " cl " or ProcessCommandLine has "clear-log"))
+     or (FileName in~ ("powershell.exe", "powershell_ise.exe") and ProcessCommandLine has "Clear-EventLog")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc

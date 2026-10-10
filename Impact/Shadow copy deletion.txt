@@ -1,0 +1,9 @@
+// Finds deletion of volume shadow copies and backup catalogs, which ransomware does to prevent recovery (T1490).
+// https://attack.mitre.org/techniques/T1490/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where (FileName =~ "vssadmin.exe" and ProcessCommandLine has "delete" and ProcessCommandLine has "shadows")
+     or (FileName =~ "wmic.exe" and ProcessCommandLine has "shadowcopy" and ProcessCommandLine has "delete")
+     or (FileName =~ "wbadmin.exe" and ProcessCommandLine has "delete" and ProcessCommandLine has_any ("catalog", "backup"))
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine
+| top 100 by EventTime desc

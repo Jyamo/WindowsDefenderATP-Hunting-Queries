@@ -1,0 +1,9 @@
+// Finds attempts to dump LSASS memory using comsvcs.dll MiniDump via rundll32 (MITRE ATT&CK T1003.001).
+// Attackers use this to extract credentials without dropping tools such as Mimikatz or procdump.
+// https://attack.mitre.org/techniques/T1003/001/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName =~ "rundll32.exe"
+| where ProcessCommandLine has "comsvcs" and ProcessCommandLine has "MiniDump"
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc
