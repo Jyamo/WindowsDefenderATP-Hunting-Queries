@@ -1,0 +1,9 @@
+// Finds attempts to export the SAM, SYSTEM or SECURITY registry hives with reg.exe, which allows offline extraction of local credentials (T1003.002).
+// https://attack.mitre.org/techniques/T1003/002/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName =~ "reg.exe"
+| where ProcessCommandLine has " save " or ProcessCommandLine has " export "
+| where ProcessCommandLine has_any ("hklm\\sam", "hklm\\system", "hklm\\security")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc

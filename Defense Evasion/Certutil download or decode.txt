@@ -1,0 +1,9 @@
+// Finds certutil.exe used to download files or decode payloads instead of managing certificates (T1105, T1140).
+// Some admin and software-deployment tooling uses certutil, so review the URL or file involved.
+// https://attack.mitre.org/techniques/T1105/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName =~ "certutil.exe"
+| where ProcessCommandLine has_any ("urlcache", "-decode", "-decodehex", "verifyctl")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc

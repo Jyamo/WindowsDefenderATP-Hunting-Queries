@@ -1,0 +1,9 @@
+// Finds Sysinternals procdump (or a renamed copy using the same switches) used against lsass.exe (T1003.001).
+// Legitimate use is rare outside of debugging - review the account and parent process.
+// https://attack.mitre.org/techniques/T1003/001/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where ProcessCommandLine has "lsass"
+| where FileName in~ ("procdump.exe", "procdump64.exe") or ProcessCommandLine has " -ma " or ProcessCommandLine has " -accepteula "
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine
+| top 100 by EventTime desc

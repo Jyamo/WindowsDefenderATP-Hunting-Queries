@@ -1,0 +1,8 @@
+// Finds schtasks.exe creating or running a task on a remote machine (/s switch), used for lateral movement (T1053.005).
+// https://attack.mitre.org/techniques/T1053/005/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName =~ "schtasks.exe"
+| where ProcessCommandLine has " /s " and (ProcessCommandLine has " /create " or ProcessCommandLine has " /run ")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc

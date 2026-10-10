@@ -1,0 +1,9 @@
+// Finds bcdedit commands that disable Windows recovery options, a common ransomware step (T1490).
+// https://attack.mitre.org/techniques/T1490/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where FileName =~ "bcdedit.exe"
+| where (ProcessCommandLine has "recoveryenabled" and ProcessCommandLine has "no")
+     or (ProcessCommandLine has "bootstatuspolicy" and ProcessCommandLine has "ignoreallfailures")
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, ProcessCommandLine
+| top 100 by EventTime desc

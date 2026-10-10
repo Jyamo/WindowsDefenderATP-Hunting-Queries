@@ -1,0 +1,10 @@
+// Finds attempts to copy the Active Directory database (ntds.dit), typically via ntdsutil "ifm" snapshots or volume shadow copies (T1003.003).
+// Expected only on domain controllers during AD maintenance; anywhere else is suspicious.
+// https://attack.mitre.org/techniques/T1003/003/
+ProcessCreationEvents
+| where EventTime > ago(7d)
+| where (FileName =~ "ntdsutil.exe" and ProcessCommandLine has_any ("ifm", "snapshot"))
+     or (FileName =~ "vssadmin.exe" and ProcessCommandLine has "create shadow")
+     or ProcessCommandLine has "ntds.dit"
+| project EventTime, ComputerName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine
+| top 100 by EventTime desc
